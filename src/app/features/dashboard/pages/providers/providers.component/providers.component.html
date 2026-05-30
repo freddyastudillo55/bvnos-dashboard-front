@@ -1,0 +1,114 @@
+<div class="providers-container">
+    <div class="page-header">
+        <div>
+            <h1>Providers Management</h1>
+            <p>Manage and audit system supplier entities</p>
+        </div>
+        <button class="btn btn-primary" (click)="openModal()">
+            <i class="fa-solid fa-plus"></i> Add Provider
+        </button>
+    </div>
+
+    <div class="table-actions">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search providers by name..." [(ngModel)]="searchTerm"
+                (input)="filterProviders()">
+        </div>
+        <div class="filter-box">
+            <select [(ngModel)]="statusFilter" (change)="loadProviders()">
+                <option value="active">Active Providers</option>
+                <option value="all">All Providers</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Provider Name</th>
+                    <th>Total in Payments</th>
+                    <th>Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let provider of filteredProviders">
+                    <td class="font-semibold">{{ provider.name }}</td>
+                    <td class="font-semibold text-primary">{{ provider.totalInPayments | currency:'USD':'symbol':'1.2-2'
+                        }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="provider.active ? 'badge-success' : 'badge-danger'">
+                            {{ provider.active ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" title="Edit Provider" (click)="openModal(provider)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button class="btn-icon delete" title="Deactivate Provider" *ngIf="provider.active"
+                                (click)="confirmDelete(provider.id)">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="filteredProviders.length === 0">
+                    <td colspan="4" class="text-center empty-state">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <p>No providers found matching the criteria.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-overlay" *ngIf="isModalOpen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>{{ currentProvider.id ? 'Edit Provider' : 'Add New Provider' }}</h2>
+                <button class="close-btn" (click)="closeModal()">&times;</button>
+            </div>
+            <form (ngSubmit)="onSubmit()">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Provider Name</label>
+                        <input type="text" [(ngModel)]="currentProvider.name" name="name" required
+                            placeholder="Company or business name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="saving">
+                        <i *ngIf="saving" class="fa-solid fa-spinner fa-spin"></i>
+                        {{ saving ? 'Saving...' : 'Save Provider' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showDeleteModal" class="modal-overlay">
+    <div class="modal-content modal-sm">
+        <div class="modal-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="modal-title">Deactivate Provider</h3>
+        <p class="modal-text">Are you sure you want to deactivate this provider? This action can be reversed later.</p>
+        <div class="modal-actions">
+            <button (click)="cancelDelete()" class="btn btn-secondary">Cancel</button>
+            <button (click)="executeDelete()" class="btn btn-danger">Yes, deactivate</button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="toast.visible" class="toast-notification" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'">
+    <div class="toast-content">
+        <i [class]="toast.type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation'"></i>
+        <span>{{ toast.message }}</span>
+    </div>
+    <button class="toast-close" (click)="toast.visible = false">&times;</button>
+</div>

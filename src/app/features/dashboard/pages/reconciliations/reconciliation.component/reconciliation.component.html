@@ -1,0 +1,282 @@
+<div class="reconciliation-container">
+
+    <div class="page-header">
+        <div>
+            <h2>Reconciliation process</h2>
+        </div>
+        <button (click)="showUploadModal = true" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> New reconciliation process
+        </button>
+    </div>
+
+    <div class="table-actions">
+        <div class="month-selector">
+            <button (click)="selectedMonth = selectedMonth === 1 ? 12 : selectedMonth - 1; selectedYear = selectedMonth === 12 ? selectedYear - 1 : selectedYear; onMonthChange()" class="btn-nav">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span class="month-label">{{ monthLabels[selectedMonth - 1] }} {{ selectedYear }}</span>
+            <button (click)="selectedMonth = selectedMonth === 12 ? 1 : selectedMonth + 1; selectedYear = selectedMonth === 1 ? selectedYear + 1 : selectedYear; onMonthChange()" class="btn-nav">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input [(ngModel)]="filters.customerId" (input)="applyFilters()" placeholder="Search by Customer ID..." />
+        </div>
+
+        <div class="search-box">
+            <i class="fa-solid fa-gears"></i>
+            <input [(ngModel)]="filters.service" (input)="applyFilters()" placeholder="Search by Service..." />
+        </div>
+
+        <div class="search-box">
+            <i class="fa-solid fa-calendar-days"></i>
+            <input type="date" [(ngModel)]="filters.date" (change)="applyFilters()" />
+        </div>
+
+        <div class="filter-box">
+            <select [(ngModel)]="filters.status" (change)="applyFilters()">
+                <option value="">All Statuses</option>
+                <option value="RECONCILED">Reconciled</option>
+                <option value="MISMATCH">Needs reconciliation</option>
+            </select>
+        </div>
+
+        <div class="filter-box">
+            <select [(ngModel)]="activeFilter" (change)="onActiveFilterChange()">
+                <option value="">All Records</option>
+                <option value="active">Active Records</option>
+                <option value="inactive">Inactive Records</option>
+            </select>
+        </div>
+
+        <button (click)="resetFilters()" class="btn-reset">
+            <span>Reset Filter</span>
+            <i class="fa-solid fa-rotate"></i>
+        </button>
+    </div>
+
+    <div class="table-container">
+        <div *ngIf="loading" class="table-loading-overlay">
+            <div class="table-loading-spinner">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Loading results...</span>
+            </div>
+        </div>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer ID</th>
+                    <th>Amount Paid</th>
+                    <th>Reconciliation Date</th>
+                    <th>Service</th>
+                    <th>Payment Status</th>
+                    <th>Record Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of results; let i = index">
+                    <td class="font-mono">{{ item.id | slice:-5 }}</td>
+                    <td class="font-mono">{{ item.customerId }}</td>
+
+                    <td class="font-semibold">
+                        <span *ngIf="item.status === 'MISMATCH'" class="text-rose-400">Mismatch</span>
+                        <span *ngIf="item.status === 'RECONCILED'" class="text-emerald-300">
+                            {{ item.finalAmount | currency:'USD':'symbol':'1.2-2' }}
+                        </span>
+                    </td>
+
+                    <td>{{ (item.reconciledAt || item.createdAt) | date:'dd MMM yyyy' }}</td>
+                    <td>{{ item.service }}</td>
+
+                    <td>
+                        <button *ngIf="item.status === 'MISMATCH'" (click)="openActionModal(item)"
+                            class="badge badge-mismatch">
+                            Needs reconciliation
+                        </button>
+                        <span *ngIf="item.status === 'RECONCILED'" class="badge badge-reconciled">
+                            Reconciled
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge" [ngClass]="item.active !== false ? 'badge-active' : 'badge-inactive'">
+                            {{ item.active !== false ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+
+                    <td class="text-center">
+                        <div class="action-buttons">
+                            <button *ngIf="item.status === 'RECONCILED' && item.active !== false" (click)="openActionModal(item)" class="btn-icon edit" title="Edit Record">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button *ngIf="item.active !== false" (click)="confirmDelete(item.id)" class="btn-icon delete" title="Delete Record">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="!loading && results.length === 0">
+                    <td colspan="8" class="text-center empty-state">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <p>No reconciliation records found matching the criteria.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination-container">
+        <span>Showing {{ results.length > 0 ? (filters.page * filters.size) + 1 : 0 }} - {{ (filters.page *
+            filters.size) + results.length }} of {{ totalItems }}</span>
+        <div class="pagination-controls">
+            <button (click)="changePage(-1)" [disabled]="filters.page === 0" class="btn-nav">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button (click)="changePage(1)" [disabled]="filters.page + 1 >= totalPages" class="btn-nav">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showDeleteModal" class="modal-overlay">
+    <div class="modal-content modal-sm">
+        <div class="modal-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="modal-title">Delete Record</h3>
+        <p class="modal-text">Are you sure you want to permanently delete this reconciliation record? This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button (click)="cancelDelete()" class="btn btn-secondary">Cancel</button>
+            <button (click)="executeDelete()" class="btn btn-danger">Yes, delete</button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="toast.visible" class="toast-notification" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'">
+    <div class="toast-content">
+        <i [class]="toast.type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation'"></i>
+        <span>{{ toast.message }}</span>
+    </div>
+    <button class="toast-close" (click)="toast.visible = false">&times;</button>
+</div>
+
+<div *ngIf="showUploadModal" class="modal-overlay">
+    <div class="modal-content max-w-xl">
+        <div class="modal-header">
+            <h2>Reconciliation Process</h2>
+            <button class="close-btn" (click)="showUploadModal = false; uploadError = ''">&times;</button>
+        </div>
+        <div class="modal-body" [class.processing]="uploading">
+            <div *ngIf="uploading" class="processing-overlay">
+                <div class="processing-content">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Processing reconciliation...</p>
+                    <span>Comparing records from both files</span>
+                </div>
+            </div>
+            <div class="file-upload-grid">
+                <div class="form-group">
+                    <label>AAX File</label>
+                    <div class="file-drop-zone">
+                        <input type="file" (change)="onFileChange($event, 'AAX')" [disabled]="uploading" />
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                        <span>{{ fileAax ? fileAax.name : 'Upload file' }}</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Vesta File</label>
+                    <div class="file-drop-zone">
+                        <input type="file" (change)="onFileChange($event, 'VESTA')" [disabled]="uploading" />
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                        <span>{{ fileVesta ? fileVesta.name : 'Upload file' }}</span>
+                    </div>
+                </div>
+            </div>
+            <p class="modal-hint">Both files must have CSV or Excel format</p>
+            <div *ngIf="uploadError" class="upload-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ uploadError }}</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button (click)="showUploadModal = false; uploadError = ''" class="btn btn-secondary" [disabled]="uploading">Cancel</button>
+            <button (click)="startNewProcess()" [disabled]="!fileVesta || !fileAax || uploading" class="btn btn-primary">
+                <i *ngIf="uploading" class="fa-solid fa-spinner fa-spin"></i>
+                {{ uploading ? 'Processing...' : 'Start reconciliation' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showAdjustModal" class="modal-overlay">
+    <div class="modal-content max-w-2xl">
+        <div class="modal-header">
+            <h2>Reconciliate payment</h2>
+            <button class="close-btn" (click)="showAdjustModal = false">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-meta-grid">
+                <div class="form-group">
+                    <label>ID</label>
+                    <input [value]="selectedRecord?.id | slice:-5" disabled />
+                </div>
+                <div class="form-group">
+                    <label>Customer ID</label>
+                    <input [value]="selectedRecord?.customerId" [title]="selectedRecord?.customerId || ''" disabled />
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input [value]="selectedRecord?.createdAt | date:'dd MMM yyyy'" disabled />
+                </div>
+                <div class="form-group">
+                    <label>Service</label>
+                    <input [value]="selectedRecord?.service" [title]="selectedRecord?.service || ''" disabled />
+                </div>
+            </div>
+
+            <div class="modal-input-grid">
+                <div class="form-group">
+                    <label>AAX Payment amount</label>
+                    <input type="number" [(ngModel)]="aaxAmountAdjust" class="input-amount" />
+                </div>
+                <div class="form-group">
+                    <label>Vesta Payment amount</label>
+                    <input type="number" [(ngModel)]="vestaAmountAdjust" class="input-amount" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button (click)="showAdjustModal = false" class="btn btn-secondary">Cancel</button>
+            <button (click)="submitAdjustment()" class="btn btn-primary">
+                Reconciliate
+            </button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="showEditModal" class="modal-overlay">
+    <div class="modal-content max-w-md">
+        <div class="modal-header">
+            <h2>Edit Reconciled Record</h2>
+            <button class="close-btn" (click)="showEditModal = false">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Final Amount ($)</label>
+                <input type="number" [(ngModel)]="finalAmountEdit" class="edit-amount" />
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button (click)="showEditModal = false" class="btn btn-secondary">Cancel</button>
+            <button (click)="submitEdition()" class="btn btn-primary">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>

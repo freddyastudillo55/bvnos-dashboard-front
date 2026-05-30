@@ -1,0 +1,20 @@
+<header class="dashboard-header">
+
+    <div class="header-title">
+        <h1>Financial Dashboard</h1>
+    </div>
+
+    <div class="header-user" *ngIf="user">
+
+        <div class="avatar-circle" [style.backgroundColor]="avatarColor">
+            <span class="avatar-initials">{{ avatarInitials }}</span>
+        </div>
+
+        <div class="user-info">
+            <span class="name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="role">{{ user.role }}</span>
+        </div>
+
+    </div>
+
+</header>

@@ -1,0 +1,44 @@
+<div class="sales-card">
+
+    <div class="sales-header">
+
+        <div>
+
+            <h2>Sales Details</h2>
+
+            <p>
+                Revenue over time
+            </p>
+
+        </div>
+
+        <div class="sales-actions">
+
+            <input type="date" [(ngModel)]="startDate">
+
+            <input type="date" [(ngModel)]="endDate">
+
+            <button (click)="loadChart()">
+                Apply
+            </button>
+
+            <button (click)="exportExcel()">
+                Export to Excel
+            </button>
+
+        </div>
+
+    </div>
+
+    <apx-chart #chart
+    [series]="chartSeries" 
+    [chart]="chartDetails" 
+    [stroke]="chartStroke" 
+    [xaxis]="chartXAxis"
+    [yaxis]="chartYAxis" 
+    [dataLabels]="chartDataLabels" 
+    [fill]="chartFill" 
+    [grid]="chartGrid"
+    [tooltip]="chartTooltip">
+</apx-chart>
+</div>

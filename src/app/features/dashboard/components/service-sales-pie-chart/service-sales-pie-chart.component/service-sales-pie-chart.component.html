@@ -1,0 +1,35 @@
+<div class="sales-card">
+
+    <div class="sales-header">
+
+        <div>
+
+            <h2>
+                Services Distribution
+            </h2>
+
+            <p>
+                Sales percentage by service
+            </p>
+
+        </div>
+
+        <div class="sales-actions">
+
+            <input type="date" [(ngModel)]="startDate">
+
+            <input type="date" [(ngModel)]="endDate">
+
+            <button (click)="loadChart()">
+                Apply
+            </button>
+
+        </div>
+
+    </div>
+
+    <apx-chart #chart [series]="chartSeries" [chart]="chartDetails" [labels]="chartLabels" [legend]="chartLegend"
+        [tooltip]="chartTooltip" [responsive]="chartResponsive">
+    </apx-chart>
+
+</div>

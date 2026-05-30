@@ -1,0 +1,61 @@
+<div class="profile-container">
+
+    <h2 class="page-title">Profile settings</h2>
+
+    <div class="profile-card">
+
+        <div class="avatar-section">
+            <div class="avatar-circle" [style.backgroundColor]="avatarColor">
+                <span class="avatar-initials">{{ avatarInitials }}</span>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input id="firstName" type="text" [(ngModel)]="user.firstName" />
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input id="lastName" type="text" [(ngModel)]="user.lastName" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Your email</label>
+                <input id="email" type="email" [(ngModel)]="user.email" />
+            </div>
+
+            <div class="form-group">
+                <label for="area">Compax area</label>
+                <div class="select-wrapper">
+                    <select id="area" [(ngModel)]="user.area">
+                        <option *ngFor="let area of areas" [value]="area">{{ area }}</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role</label>
+                <input id="role" type="text" [value]="user.role" disabled />
+            </div>
+        </div>
+
+        <div class="save-section">
+            <button (click)="save()" [disabled]="saving" class="btn-save">
+                <i *ngIf="saving" class="fa-solid fa-spinner fa-spin"></i>
+                {{ saving ? 'Saving...' : 'Save' }}
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div *ngIf="toast.visible" class="toast-notification" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'">
+    <div class="toast-content">
+        <i [class]="toast.type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation'"></i>
+        <span>{{ toast.message }}</span>
+    </div>
+    <button class="toast-close" (click)="toast.visible = false">&times;</button>
+</div>

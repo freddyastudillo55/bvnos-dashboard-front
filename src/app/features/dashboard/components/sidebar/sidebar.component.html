@@ -1,0 +1,56 @@
+<aside class="sidebar">
+
+    <div class="sidebar-header">
+        <h2>BVNOS</h2>
+        <span>Compax Venture</span>
+    </div>
+
+    <nav class="sidebar-menu">
+
+        <a routerLink="/dashboard/home" routerLinkActive="active">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a routerLink="/dashboard/providers" routerLinkActive="active">
+            <i class="fa-solid fa-users"></i>
+            <span>Providers</span>
+        </a>
+
+        <a routerLink="/dashboard/provider-payments" routerLinkActive="active">
+            <i class="fa-solid fa-money-bill"></i>
+            <span>Providers payments</span>
+        </a>
+
+        <a routerLink="/dashboard/reconciliations" routerLinkActive="active">
+            <i class="fa-solid fa-money-check-dollar"></i>
+            <span>Reconciliation process</span>
+        </a>
+
+        <a routerLink="/dashboard/profile" routerLinkActive="active">
+            <i class="fa-solid fa-user"></i>
+            <span>Profile settings</span>
+        </a>
+
+        <a (click)="logout()" class="logout-link">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+
+    </nav>
+
+</aside>
+
+<div *ngIf="showLogoutModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-icon">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+        <h3 class="modal-title">Sign out</h3>
+        <p class="modal-text">Are you sure you want to sign out of your account?</p>
+        <div class="modal-actions">
+            <button (click)="cancelLogout()" class="btn btn-cancel">Cancel</button>
+            <button (click)="confirmLogout()" class="btn btn-confirm">Yes, sign out</button>
+        </div>
+    </div>
+</div>

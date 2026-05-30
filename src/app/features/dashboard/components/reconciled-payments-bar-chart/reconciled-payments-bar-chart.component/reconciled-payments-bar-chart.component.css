@@ -1,0 +1,23 @@
+.chart-card {
+
+    background-color: white;
+
+    border-radius: 20px;
+
+    padding: 24px;
+
+    box-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.chart-header {
+
+    margin-bottom: 20px;
+}
+
+.chart-header h3 {
+
+    font-size: 22px;
+
+    font-weight: 700;
+}

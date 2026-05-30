@@ -1,0 +1,22 @@
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    background-color: #f4f7fb;
+    overflow: hidden;
+}
+
+.dashboard-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.page-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
