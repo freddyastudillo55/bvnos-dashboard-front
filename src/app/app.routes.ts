@@ -22,5 +22,6 @@ export const routes: Routes = [
             import('./features/dashboard/dashboard.routes')
                 .then(r => r.DASHBOARD_ROUTES)
     }
+    
 
 ];
