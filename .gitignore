@@ -1,8 +1,5 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Environment files (contain sensitive API URLs/keys)
-/src/environments/environment.prod.ts
-
 # Compiled output
 /dist
 /tmp
