@@ -20,3 +20,10 @@
     overflow-x: hidden;
     box-sizing: border-box;
 }
+
+/* Laptops pequeños y pantallas medianas */
+@media (max-width: 1366px) {
+    .page-content {
+        padding: 16px;
+    }
+}

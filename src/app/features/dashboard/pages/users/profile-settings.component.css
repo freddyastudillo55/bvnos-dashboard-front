@@ -223,3 +223,59 @@
         opacity: 1;
     }
 }
+
+/* Laptops pequeños */
+@media (max-width: 1366px) {
+    .profile-container {
+        padding: 24px;
+    }
+
+    .profile-card {
+        max-width: 500px;
+        padding: 32px;
+    }
+
+    .page-title {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 1280px) {
+    .profile-container {
+        padding: 16px;
+    }
+
+    .profile-card {
+        max-width: 460px;
+        padding: 24px;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    .form-grid {
+        gap: 14px;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 8px 12px;
+        font-size: 13px;
+        height: 36px;
+    }
+
+    .avatar-circle {
+        width: 64px;
+        height: 64px;
+    }
+
+    .avatar-initials {
+        font-size: 24px;
+    }
+
+    .btn-save {
+        padding: 8px 40px;
+        font-size: 14px;
+    }
+}
