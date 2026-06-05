@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -28,7 +28,7 @@ import {
   templateUrl: './sales-details-chart.component.html',
   styleUrl: './sales-details-chart.component.css'
 })
-export class SalesDetailsChartComponent implements OnChanges {
+export class SalesDetailsChartComponent implements OnInit {
 
   @ViewChild('chart') chart!: ChartComponent;
 
@@ -37,6 +37,9 @@ export class SalesDetailsChartComponent implements OnChanges {
 
   @Input()
   endDate!: string;
+
+  filterStartDate: string = '';
+  filterEndDate: string = '';
 
   salesData: any[] = [];
 
@@ -107,46 +110,41 @@ export class SalesDetailsChartComponent implements OnChanges {
     private dashboardService: DashboardService
   ) { }
 
-  ngOnChanges(
-    changes: SimpleChanges
-  ): void {
-    if (
-      this.startDate &&
-      this.endDate
-    ) {
-      this.loadChart();
-    }
+  ngOnInit(): void {
+    this.filterStartDate = this.startDate;
+    this.filterEndDate = this.endDate;
+    this.loadChart();
   }
 
- loadChart(): void {
+  applyDates(): void {
+    this.loadChart();
+  }
+
+  loadChart(): void {
     this.dashboardService
       .getSalesDetails(
-        this.startDate,
-        this.endDate
+        this.filterStartDate,
+        this.filterEndDate
       )
       .subscribe({
         next: (response) => {
           this.salesData = response;
 
-          this.chartSeries = [
-            {
-              name: 'Sales',
-              data: response.map(
-                (item: any) => item.totalSales
-              )
-            }
-          ];
-
-          this.chartXAxis = {
-            categories: response.map(
-              (item: any) => item.date
-            )
-          };
-
           if (this.chart) {
-            this.chart.updateSeries(this.chartSeries);
+            this.chart.updateSeries([
+              {
+                name: 'Sales',
+                data: response.map(
+                  (item: any) => item.totalSales
+                )
+              }
+            ]);
             this.chart.updateOptions({
-              xaxis: this.chartXAxis
+              xaxis: {
+                categories: response.map(
+                  (item: any) => item.date
+                )
+              }
             });
           }
         },

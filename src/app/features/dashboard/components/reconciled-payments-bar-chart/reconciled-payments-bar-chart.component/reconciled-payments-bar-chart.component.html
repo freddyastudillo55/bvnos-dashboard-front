@@ -12,14 +12,13 @@
 
     </div>
 
-    <apx-chart
-        #chart
-        [series]="chartSeries"
+    <apx-chart #chart
         [chart]="chartDetails"
+        [series]="chartSeries"
         [xaxis]="chartXAxis"
+        [colors]="chartColors"
         [plotOptions]="chartPlotOptions"
-        [dataLabels]="chartDataLabels"
-        [colors]="chartColors">
+        [dataLabels]="chartDataLabels">
     </apx-chart>
 
 </div>

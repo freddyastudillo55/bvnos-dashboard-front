@@ -16,9 +16,9 @@
 
         <div class="sales-actions">
 
-            <input type="date" [(ngModel)]="startDate">
+            <input type="date" [(ngModel)]="filterStartDate">
 
-            <input type="date" [(ngModel)]="endDate">
+            <input type="date" [(ngModel)]="filterEndDate">
 
             <button (click)="loadChart()">
                 Apply
@@ -28,8 +28,13 @@
 
     </div>
 
-    <apx-chart #chart [series]="chartSeries" [chart]="chartDetails" [labels]="chartLabels" [legend]="chartLegend"
-        [tooltip]="chartTooltip" [responsive]="chartResponsive">
+    <apx-chart #chart
+        [chart]="chartDetails"
+        [series]="chartSeries"
+        [labels]="chartLabels"
+        [legend]="chartLegend"
+        [tooltip]="chartTooltip"
+        [responsive]="chartResponsive">
     </apx-chart>
 
 </div>

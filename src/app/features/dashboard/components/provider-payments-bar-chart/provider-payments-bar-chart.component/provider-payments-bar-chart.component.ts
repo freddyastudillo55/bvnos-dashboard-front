@@ -86,48 +86,41 @@ export class ProviderPaymentsBarChartComponent
     '#ef4444'
   ];
 
+  dataLoaded = false;
+
   constructor(
     private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
-
     this.loadChart();
   }
 
   loadChart(): void {
-
     this.dashboardService
       .getProviderPaymentsReport()
       .subscribe({
         next: (response) => {
-
-          this.chartSeries = [
-            {
-              name: 'Payments',
-              data: response.map(
-                (item: any) => item.totalAmount
-              )
-            }
-          ];
-
-          this.chartXAxis = {
-            categories: response.map(
-              (item: any) => item.providerName
-            )
-          };
-
           if (this.chart) {
-
             this.chart.updateOptions({
               colors: this.chartColors,
-              xaxis: this.chartXAxis
+              xaxis: {
+                categories: response.map(
+                  (item: any) => item.providerName
+                )
+              }
             });
 
-            this.chart.updateSeries(
-              this.chartSeries
-            );
+            this.chart.updateSeries([
+              {
+                name: 'Payments',
+                data: response.map(
+                  (item: any) => item.totalAmount
+                )
+              }
+            ]);
           }
+          this.dataLoaded = true;
         },
         error: (error) => {
           console.error(error);

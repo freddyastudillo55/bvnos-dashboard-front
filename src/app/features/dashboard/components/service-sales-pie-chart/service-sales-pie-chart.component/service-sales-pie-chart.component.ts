@@ -27,9 +27,8 @@ export class ServiceSalesPieChartComponent
 
   @ViewChild('chart') chart!: ChartComponent;
 
-  startDate = '';
-
-  endDate = '';
+  filterStartDate = '';
+  filterEndDate = '';
 
   chartSeries: ApexNonAxisChartSeries = [];
 
@@ -78,10 +77,10 @@ export class ServiceSalesPieChartComponent
       today.getDate() - 30
     );
 
-    this.startDate =
+    this.filterStartDate =
       prior.toISOString().split('T')[0];
 
-    this.endDate =
+    this.filterEndDate =
       today.toISOString().split('T')[0];
 
     this.loadChart();
@@ -90,25 +89,21 @@ export class ServiceSalesPieChartComponent
   loadChart(): void {
     this.dashboardService
       .getServiceSalesPercentage(
-        this.startDate,
-        this.endDate
+        this.filterStartDate,
+        this.filterEndDate
       )
       .subscribe({
         next: (response) => {
-          this.chartSeries =
-            response.map(
-              (item: any) => item.percentage
-            );
-
-          this.chartLabels =
-            response.map(
-              (item: any) => item.service
-            );
-
           if (this.chart) {
-            this.chart.updateSeries(this.chartSeries);
+            this.chart.updateSeries(
+              response.map(
+                (item: any) => item.percentage
+              )
+            );
             this.chart.updateOptions({
-              labels: this.chartLabels
+              labels: response.map(
+                (item: any) => item.service
+              )
             });
           }
         },

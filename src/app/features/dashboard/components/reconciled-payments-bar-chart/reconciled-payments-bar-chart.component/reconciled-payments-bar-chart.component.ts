@@ -86,48 +86,41 @@ export class ReconciledPaymentsBarChartComponent
     '#ef4444'
   ];
 
+  dataLoaded = false;
+
   constructor(
     private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
-
     this.loadChart();
   }
 
   loadChart(): void {
-
     this.dashboardService
       .getReconciledPaymentsLastSixMonths()
       .subscribe({
         next: (response) => {
-
-          this.chartSeries = [
-            {
-              name: 'Reconciled',
-              data: response.map(
-                (item: any) => item.totalReconciled
-              )
-            }
-          ];
-
-          this.chartXAxis = {
-            categories: response.map(
-              (item: any) => item.month
-            )
-          };
-
           if (this.chart) {
-
             this.chart.updateOptions({
               colors: this.chartColors,
-              xaxis: this.chartXAxis
+              xaxis: {
+                categories: response.map(
+                  (item: any) => item.month
+                )
+              }
             });
 
-            this.chart.updateSeries(
-              this.chartSeries
-            );
+            this.chart.updateSeries([
+              {
+                name: 'Reconciled',
+                data: response.map(
+                  (item: any) => item.totalReconciled
+                )
+              }
+            ]);
           }
+          this.dataLoaded = true;
         },
         error: (error) => {
           console.error(error);
